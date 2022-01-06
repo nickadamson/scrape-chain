@@ -1,0 +1,7 @@
+{
+  "pollingInterval": 10000,
+  "contractAddress": "0x",
+  "endpoint": "http://",
+  "infuraID": "",
+  "baseURL": "ipfs://"
+}
