@@ -2,7 +2,11 @@
   "name": "scrape-chain",
   "version": "1.0.0",
   "description": "Fetch and create database from an EVM-compatabile blockchain",
-  "main": "src/runner/quest-runner",
+  "type": "module",
+  "main": "src/scrapeWeb",
+  "scripts": {
+    "start": "node ."
+  },
   "dependencies": {
     "axios": "^0.24.0",
     "ethers": "^5.5.2",

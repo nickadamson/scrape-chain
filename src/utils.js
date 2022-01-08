@@ -1,8 +1,11 @@
+import { createRequire } from "module";
 import { LowSync, JSONFileSync } from "lowdb";
-import { GraphQLClient } from "graphql-request";
+import { gql, GraphQLClient } from "graphql-request";
 import { ethers } from "ethers";
-import config from "./config";
-import abi from "./abi";
+
+const require = createRequire(import.meta.url);
+const config = require("./config.json");
+const abi = require("./abi.json");
 
 // change sleep time in config, ms
 export const sleep = (ms) => {
@@ -15,10 +18,10 @@ export const sleep = (ms) => {
 
 // file system setup
 export function getDB() {
-  const adapter = new JSONFileSync("collection.json");
+  const adapter = new JSONFileSync("./src/collection.json");
   const db = new LowSync(adapter);
-  await db.read();
-  db.data ||= {};
+  db.read();
+  db.data ||= { ids: [] };
 
   return db;
 }

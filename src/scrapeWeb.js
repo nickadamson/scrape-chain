@@ -1,25 +1,29 @@
+import { createRequire } from "module";
 import axios from "axios";
-import { sleep, getDB, graphQLClient, gqlQuery } from "./utils";
-import config from "./config";
-import abi from "./abi";
+import { sleep, getDB, graphQLClient, gqlQuery } from "./utils.js";
+
+const require = createRequire(import.meta.url);
+const config = require("./config.json");
+const abi = require("./abi.json");
 
 // collection.json
 const db = getDB();
+
 async function saveData(data) {
   const parsed = parseData(data);
 
-  db.data.push(parsed);
+  db.data.push(...parsed);
 
   // save file
-  await db.write();
+  db.write();
 }
 
 async function getData(id) {
   // fetch from IPFS
-  const url = `${config.baseURL}/${id}`;
-  const { data } = await axios.get(url, {
-    timeout: config.pollingInterval,
-  });
+  // const url = `${config.baseURL}/${id}`;
+  // const { data } = await axios.get(url, {
+  //   timeout: config.pollingInterval,
+  // });
 
   // or fetch from graph
   const query = gqlQuery(id);
@@ -59,24 +63,24 @@ function parseData(unparsed) {
 
 async function run() {
   // for (let id = 0; id <= 10000; id++) {
-  for (let id = 1; id <= 10000; id++) {
-    console.info(`Syncing #${id}...`);
+  for (let idx = 0; idx <= 100000; idx += 1000) {
+    console.info(`Syncing #${idx + 1}-${idx + 1000}...`);
 
     try {
-      const data = await getData(id);
+      const data = await getData(idx);
       saveData(data);
 
-      console.info(`Successfully saved #${id}!`);
+      console.info(`Successfully saved!`);
 
       await sleep(config.pollingInterval);
     } catch (error) {
-      console.error(`Failed to fetch #${id}\nWaiting to try again...`);
+      console.error(`Failed to fetch; Error: ${JSON.stringify(error)}\nWaiting to try again...`);
 
-      const data = await rateLimited(id);
+      const data = await rateLimited(idx);
 
       saveData(data);
 
-      console.info(`Successfully saved #${id} after initial failure!`);
+      console.info(`Successfully saved #${idx}-${idx + 1000} after initial failure!`);
     }
   }
 
